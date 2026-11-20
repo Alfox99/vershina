@@ -97,7 +97,17 @@ function route() {
   renderHome();
 }
 window.addEventListener('hashchange', route);
-let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (/^#\/m\//.test(location.hash) && !$('.modal')) route(); }, 250); });
+let rz, lastW = window.innerWidth;
+window.addEventListener('resize', () => {
+  clearTimeout(rz);
+  rz = setTimeout(() => {
+    // на телефоне при прокрутке меняется только высота (адресная строка): тогда ничего не перерисовываем
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    const m = location.hash.match(/^#\/m\/(\w+)/);
+    if (m && lvById(m[1]) && $('#tw') && !$('.modal')) { const y = window.scrollY; buildTrail(lvById(m[1])); window.scrollTo(0, y); }
+  }, 250);
+});
 
 /* ---------- главная ---------- */
 function renderHome() {
